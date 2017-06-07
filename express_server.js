@@ -13,13 +13,16 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-
 function generateRandomString() {
   var newID = "";
     var stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for(var i=0; i < 6; i++)
         newID += stringChars.charAt(Math.floor(Math.random() * stringChars.length));
     return newID;
+};
+
+function displayError(message) {
+  alert(message);
 };
 
 app.get("/", (req, res) => {
@@ -34,10 +37,15 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const newURL = generateRandomString();
-  urlDatabase[newURL] = req.body['longURL'];
-  res.redirect(`/urls/${newURL}`);
+  if (req.body['longURL'].includes('http://')) {
+    const newURL = generateRandomString();
+    urlDatabase[newURL] = req.body['longURL'];
+    res.redirect(`/urls/${newURL}`);
+    } else {
+    res.render("urls_newError");
+  }
 });
+
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
