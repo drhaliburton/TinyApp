@@ -1,3 +1,14 @@
 <header>
   <h1>TinyURL</h1>
+  <% if (username) { %>
+    <p>
+      Hello <%= username %>!
+      <% } else { %>
+    </p>
+    <form action="/login" method="POST" style="margin-bottom: 50px">
+      <label for="username">Login: </label>
+      <input id="username" type="text" name="username" placeholder="Please enter your name! 👈" style="width: 200px">
+      <input type="submit" value="Login">
+    </form>
+    <% } %>
 </header>
