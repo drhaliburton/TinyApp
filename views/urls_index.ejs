@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>URL Index</title>
+</head>
+<body>
+  <% include partials/_header.ejs %>
+  <p>
+  <ul>
+    </li>
+    <% for (var key in urls) { %>
+    <li><%= urls[key] %> => <a href="http://localhost:8080/u/<%= key %>">http://localhost:8080/u/<%= key %></a></li><br />
+  <% } %>
+  </ul>
+  </p>
+  <a href="/">Try Another</a> 
+</body>
+</html>

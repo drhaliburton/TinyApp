@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Shortened URLS</title>
+</head>
+<body>
+  <% include partials/_header.ejs %>
+  <p>
+  <%= urls %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
+
+  </p>
+    <a href="/">Try Another</a> | <a href="/urls">Show All</a>
+</body>
+</html>
