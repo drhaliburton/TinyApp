@@ -1,3 +1,5 @@
+//group gets/posts by function
+
 "use strict";
 
 const express = require("express");
@@ -17,19 +19,32 @@ const urlDatabase = {
 
 function generateRandomString() {
   var newID = "";
-    var stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for(var i=0; i < 6; i++)
-        newID += stringChars.charAt(Math.floor(Math.random() * stringChars.length));
-    return newID;
-};
-
-function displayError(message) {
-  alert(message);
-};
-
+  var stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for(var i = 0; i < 6; i++) {
+    newID += stringChars.charAt(Math.floor(Math.random() * stringChars.length));
+  }
+  return newID;
+}
 
 app.get('/', (req, res) => {
-  res.redirect('/urls');
+  res.redirect("/urls");
+});
+
+// renders urls_index page (displays all shortened URLS)
+
+app.get("/urls", (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
+  res.render("urls_index", templateVars);
+});
+
+//reroutes shortened URL to original URL
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.post("/login", (req, res) => {
@@ -42,6 +57,8 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+//Renders urls_new for users to input a longURL to be shortened
+
 app.get("/urls/new", (req, res) => {
   var templateVars = {
     username: req.cookies["username"],
@@ -50,29 +67,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-
-app.get("/urls", (req, res) => {
-  let templateVars = {
-    username: req.cookies["username"],
-    urls: urlDatabase,
-  };
-  res.render("urls_index", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  if (req.body['longURL'].includes('http://')) {
-    const newID = generateRandomString();
-    urlDatabase[newID] = req.body['longURL'];
-    res.redirect(`/urls/${newID}`);
-  } else {
-    res.redirect('/urls/new?error=InvalidPath');
-  }
-});
-
-app.post("/urls/:id/delete", (req, res) => {
-    delete urlDatabase[req.params.id];
-    res.redirect("/urls");
-});
+//Creates a new shortened URL
 
 app.post("/urls/:id", (req, res) => {
   if (req.body['longURL'].includes('http://')) {
@@ -82,6 +77,21 @@ app.post("/urls/:id", (req, res) => {
     res.redirect(`/urls/${req.params.id}?error=InvalidPath`);
   }
 });
+
+//Generates random ID and redirects to shortURL page
+
+app.post("/urls", (req, res) => {
+  // use regEx
+  if (req.body['longURL'].includes('http://')) {
+    const newID = generateRandomString();
+    urlDatabase[newID] = req.body['longURL'];
+    res.redirect(`/urls/${newID}`);
+  } else {
+    res.redirect('/urls/new?error=InvalidPath');
+  }
+});
+
+//Displays shortURL page for users to view/edit new URL
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
@@ -93,11 +103,13 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+// Deletes a shortened URL
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp is listening on port ${PORT}!`);
 });

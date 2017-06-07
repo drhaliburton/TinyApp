@@ -1,25 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>URL Index</title>
-
+  <title>Shotened URLS</title>
 </head>
-<body>
-  <% include partials/_header.ejs %>
-  <p>
-  <ul>
-    </li>
-    <% for (var key in urls) { %>
-    <li><%= urls[key] %> => <a href="http://localhost:8080/u/<%= key  %>">http://localhost:8080/u/<%= key %></a><br /><br />
-      <form method="POST" action="/urls/<%= key %>/delete">
-      <input type="submit" value="Delete"> | <a href="/urls/<%= key %>" class="button">Edit</a>
-      </form>
-
-
-    </li><br />
-  <% } %>
-  </ul>
-  </p>
-  <a href="/urls/new">Try Another</a>
-</body>
+  <body>
+    <% include partials/_header.ejs %>
+    <p>
+      <ul>
+        <% for (var key in urls) { %>
+        <li><%= urls[key] %> => <a href="http://localhost:8080/u/<%= key  %>">http://localhost:8080/u/<%= key %></a>
+          <br /><br />
+          <form method="POST" action="/urls/<%= key %>/delete">
+            <input type="submit" value="Delete"> | <a href="/urls/<%= key %>" class="button">Edit</a>
+          </form>
+        </li>
+        <br />
+        <% } %>
+      </ul>
+    </p>
+  <a href="/urls/new">Add New</a>
+  </body>
 </html>
