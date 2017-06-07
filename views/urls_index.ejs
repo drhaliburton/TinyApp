@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>URL Index</title>
+
 </head>
 <body>
   <% include partials/_header.ejs %>
@@ -9,10 +10,16 @@
   <ul>
     </li>
     <% for (var key in urls) { %>
-    <li><%= urls[key] %> => <a href="http://localhost:8080/u/<%= key %>">http://localhost:8080/u/<%= key %></a></li><br />
+    <li><%= urls[key] %> => <a href="http://localhost:8080/u/<%= key  %>">http://localhost:8080/u/<%= key %></a><br /><br />
+      <form method="POST" action="/urls/<%= key %>/delete">
+      <input type="submit" value="Delete"> | <a href="/urls/<%= key %>" class="button">Edit</a>
+      </form>
+
+
+    </li><br />
   <% } %>
   </ul>
   </p>
-  <a href="/">Try Another</a> 
+  <a href="/urls/new">Try Another</a>
 </body>
 </html>

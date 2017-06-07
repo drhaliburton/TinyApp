@@ -8,6 +8,17 @@
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="Type your URL here! 👀" style="width: 300px">
       <input type="submit" value="Submit">
+      <form method="POST" action="/urls/<%= shortURL %>">
+        <label for="longURL">Edit URL:</label>
+        <input id="longURL" type="text" name="longURL" placeholder="Type your new URL here! 👀" style="width: 300px">
+      <input type="submit" value="Update">
+      </form>
+
+      <% if (error) { %>
+        <p style="font-size:14px;">
+          💥 Invalid entry - please enter valid address. Format: http://www.example.com. 💥
+        </p>
+        <% } %>
     </form>
     <br />
   </body>
