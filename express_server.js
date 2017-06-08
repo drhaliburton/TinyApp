@@ -8,19 +8,15 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use((req, res, next) => {
-  res.locals.user = req.user = users[req.cookies.username];
+  res.locals.user = users[req.cookies.userID];
   next();
 });
 
 app.set('view engine', 'ejs');
-
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
 
 const users = {
   "userRandomID": {
@@ -33,7 +29,13 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
+
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
+
 
 function generateRandomString() {
   var newID = "";
@@ -44,28 +46,26 @@ function generateRandomString() {
   return newID;
 }
 
-function validEmail(email) {
-  for (var userID in users) {
-    if (users[userID].email === email) {
-      return users[userID].email;
-    } else {
-      return undefined;
+function authenticate(email, password) {
+  for (const userId in users) {
+    if (users[userId].email === email && users[userId].password === password) {
+      return users[userId];
     }
   }
-}
-
-function validPassword(password) {
-  for (var userID in users) {
-    if (users[userID].password === password) {
-      return users[userID].password;
-    } else {
-      return undefined;
-    }
-  }
+  return undefined;
 }
 
 app.get('/', (req, res) => {
   res.redirect("/urls");
+});
+
+//Renders urls_new for users to input a longURL to be shortened
+
+app.get("/urls/new", (req, res) => {
+  var templateVars = {
+    error: req.query.error
+  };
+  res.render("urls_new", templateVars);
 });
 
 // renders urls_index page (displays all shortened URLS)
@@ -77,12 +77,17 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//reroutes shortened URL to original URL
+//Displays shortURL page for users to view/edit new URL
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase[req.params.id],
+    shortURL: req.params.id,
+    error: req.query.error
+  };
+  res.render("urls_show", templateVars);
 });
+
 
 app.get('/register', (req, res) => {
   let templateVars = {
@@ -94,38 +99,21 @@ app.get('/register', (req, res) => {
 // Checks if entered email address has already been taken, and if not, if the
 
 app.post("/register", (req, res) => {
-  if (validEmail(req.body['email'])) {
-    res.status(400).redirect('/register?error=400');
-  }
-  if (req.body['email'] && req.body['password']) {
+ const user = authenticate(req.body.email, req.body.password);
+  if (!user) {
     const newUserID = generateRandomString();
     users[newUserID] = {
       id: newUserID,
       email: req.body['email'],
       password: req.body['password']
     };
-    console.log(users);
-    const parsedID = cookieParser.JSONCookies(users[newUserID]);
-    res.cookie('username', parsedID.id);
+    res.cookie('userID', newUserID);
     res.redirect("/urls");
   } else {
     res.status(400).redirect('/register?error=400');
   }
 });
 
-//checks if username and password are in the users database before redirecting to logged in urls page
-
-app.post('/login', (req, res) => {
-  for (var keys in users) {
-    if (validEmail(req.body['email']) && validPassword(req.body['password'])) {
-      const parsedID = cookieParser.JSONCookies(key);
-      res.cookie('username', parsedID.id);
-    } else {
-      res.status(400).redirect('/login?error=400');
-    }
-  }
-  res.redirect("/urls");
-});
 
 app.get('/login', (req, res) => {
   var templateVars = {
@@ -134,18 +122,31 @@ app.get('/login', (req, res) => {
   res.render("login", templateVars);
   });
 
-app.post("/logout", (req, res) => {
-  res.clearCookie('username', user[req.cookies.username]);
-  res.redirect("/urls");
+//checks if email and password are in the users database before redirecting to logged in urls page
+
+app.post('/login', (req, res) => {
+  const user = authenticate(req.body.email, req.body.password);
+  if (user) {
+      res.cookie('userID', user.id);
+      res.redirect("/");
+    } else {
+      res.status(403).redirect('/login?error=403');
+  }
 });
 
-//Renders urls_new for users to input a longURL to be shortened
+// app.post('/login', (req, res) => {
+//   const user = userDatabase.authenticate(req.body.email, req.body.password);
+//   if (user !== undefined) {
+//       res.session.userID = user.id;
+//       res.redirect("/");
+//     } else {
+//       res.status(403).redirect('/login?error=403');
+//   }
+// });
 
-app.get("/urls/new", (req, res) => {
-  var templateVars = {
-    error: req.query.error
-  };
-  res.render("urls_new", templateVars);
+app.post("/logout", (req, res) => {
+  res.clearCookie('userID');
+  res.redirect("/login");
 });
 
 //Creates a new shortened URL
@@ -172,22 +173,18 @@ app.post("/urls", (req, res) => {
   }
 });
 
-//Displays shortURL page for users to view/edit new URL
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase[req.params.id],
-    shortURL: req.params.id,
-    error: req.query.error
-  };
-  res.render("urls_show", templateVars);
-});
-
 // Deletes a shortened URL
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  delete urlDatabase[user];
   res.redirect("/urls");
+});
+
+//reroutes shortened URL to original URL
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {

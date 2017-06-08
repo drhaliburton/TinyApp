@@ -1,20 +1,24 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <title>Shortened URL</title>
+  <head>
+    <title>Shortened URL</title>
+  </head>
 
-</head>
   <body>
-    <form>
       <form action="/login" method="POST" style="margin-bottom: 50px">
-      <label for="email"> ✉️ </label>
-      <input id="email" type="email" name="email" placeholder="eg: bob@pursefirst.com" style="width: 300px">
+      <% if (error) { %>
+        <p style="font-size:14px;">
+          💥 Invalid login - please enter valid credentials or <a href="/register">register here</a>💥
+        </p>
+        <% } %>
+      <label> ✉️ </label>
+      <input type="email" name="email" placeholder="eg: bob@pursefirst.com" style="width: 300px">
       <br />
       <label for="password"> 🗝 </label>
-      <input id="password" type="password" name="password" placeholder="Enter a password" style="width: 300px">
+      <input type="password" name="password" placeholder="Enter a password" style="width: 300px">
       <br /><br />
       <input type="submit" value="Login" style="margin-left: 20px">
     </form>
+  </body>
 
-</body>
 </html>
