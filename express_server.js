@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   res.locals.user = req.user = users[req.cookies.username];
   next();
-})
+});
 
 app.set('view engine', 'ejs');
 
@@ -23,15 +23,15 @@ const urlDatabase = {
 };
 
 const users = {
-  "666": {
-    id: "666",
-    email: "el@diablo.hl",
-    password: "your-soul"
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
   },
- "42": {
-    id: "42",
-    email: "answer@everthing.gal",
-    password: "my-towel"
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
   }
 }
 
@@ -48,6 +48,16 @@ function validEmail(email) {
   for (var userID in users) {
     if (users[userID].email === email) {
       return users[userID].email;
+    } else {
+      return undefined;
+    }
+  }
+}
+
+function validPassword(password) {
+  for (var userID in users) {
+    if (users[userID].password === password) {
+      return users[userID].password;
     } else {
       return undefined;
     }
@@ -81,6 +91,8 @@ app.get('/register', (req, res) => {
   res.render("registration", templateVars);
 });
 
+// Checks if entered email address has already been taken, and if not, if the
+
 app.post("/register", (req, res) => {
   if (validEmail(req.body['email'])) {
     res.status(400).redirect('/register?error=400');
@@ -92,11 +104,27 @@ app.post("/register", (req, res) => {
       email: req.body['email'],
       password: req.body['password']
     };
-    res.cookie('username', users[newUserID]);
+    console.log(users);
+    const parsedID = cookieParser.JSONCookies(users[newUserID]);
+    res.cookie('username', parsedID.id);
     res.redirect("/urls");
   } else {
     res.status(400).redirect('/register?error=400');
   }
+});
+
+//checks if username and password are in the users database before redirecting to logged in urls page
+
+app.post('/login', (req, res) => {
+  for (var keys in users) {
+    if (validEmail(req.body['email']) && validPassword(req.body['password'])) {
+      const parsedID = cookieParser.JSONCookies(key);
+      res.cookie('username', parsedID.id);
+    } else {
+      res.status(400).redirect('/login?error=400');
+    }
+  }
+  res.redirect("/urls");
 });
 
 app.get('/login', (req, res) => {
@@ -106,14 +134,8 @@ app.get('/login', (req, res) => {
   res.render("login", templateVars);
   });
 
-
-app.post("/login", (req, res) => {
-  // search for credentials (email and pass), if you don't have them send an error, else set cookie userID
-  res.redirect("/urls");
-});
-
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('username', user[req.cookies.username]);
   res.redirect("/urls");
 });
 

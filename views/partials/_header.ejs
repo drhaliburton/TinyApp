@@ -1,10 +1,13 @@
 <header>
+
   <h1>TinyApp</h1>
-        Hello <%= user.email %>!
+  <p style="font-size:14px;">
+     <a href="/login">Login</a><Br />
+     <a href="/register">Register</a>
+  </p>
   <% if (user) { %>
-
-    <p>
-
+    Hello <%= user.email %>!
+    <p><form>
       <form action="/logout" method="POST" style="margin-bottom: 50px">
         <input type="submit" value="Logout"></form>
     </p>
