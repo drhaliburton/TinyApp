@@ -10,6 +10,11 @@ const cookieParser = require("cookie-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use((req, res, next) => {
+  res.locals.user = req.user = users[req.cookies.username];
+  next();
+})
+
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -57,7 +62,6 @@ app.get('/', (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -72,7 +76,6 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get('/register', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
     error: req.query.error
   }
   res.render("registration", templateVars);
@@ -89,7 +92,7 @@ app.post("/register", (req, res) => {
       email: req.body['email'],
       password: req.body['password']
     };
-    res.cookie('username', users[newUserID].email);
+    res.cookie('username', users[newUserID]);
     res.redirect("/urls");
   } else {
     res.status(400).redirect('/register?error=400');
@@ -98,7 +101,6 @@ app.post("/register", (req, res) => {
 
 app.get('/login', (req, res) => {
   var templateVars = {
-    username: res.cookie('username', users[newUserID].email),
     error: req.query.error
   };
   res.render("login", templateVars);
@@ -106,7 +108,7 @@ app.get('/login', (req, res) => {
 
 
 app.post("/login", (req, res) => {
-  res.cookie('username', users[newUserID].email);
+  // search for credentials (email and pass), if you don't have them send an error, else set cookie userID
   res.redirect("/urls");
 });
 
@@ -119,7 +121,6 @@ app.post("/logout", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   var templateVars = {
-    username: res.cookie('username', users[newUserID].email),
     error: req.query.error
   };
   res.render("urls_new", templateVars);
@@ -153,7 +154,6 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: res.cookie('username', users[newUserID].email),
     urls: urlDatabase[req.params.id],
     shortURL: req.params.id,
     error: req.query.error
