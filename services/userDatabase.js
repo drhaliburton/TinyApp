@@ -24,7 +24,28 @@ function find(id) {
   return users[id];
 }
 
+function checkEmail(email) {
+  for (const userID in users) {
+    if (users[userID].email === email) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function addNewUser(userID, email, password) {
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+}
+
+
+
 module.exports = {
   authenticate,
   find,
+  checkEmail,
+  addNewUser
 };

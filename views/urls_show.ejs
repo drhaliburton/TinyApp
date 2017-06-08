@@ -6,7 +6,7 @@
   <body>
     <% include partials/_header.ejs %>
       <p>
-      <%= urls %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
+      <%= longURL %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
 
       <form method="POST" action="/urls/<%= shortURL %>">
         <label for="longURL">Edit URL:</label>
