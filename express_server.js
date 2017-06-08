@@ -17,6 +17,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "666": {
+    id: "666",
+    email: "el@diablo.hl",
+    password: "your-soul"
+  },
+ "42": {
+    id: "42",
+    email: "answer@everthing.gal",
+    password: "my-towel"
+  }
+}
+
 function generateRandomString() {
   var newID = "";
   var stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -24,6 +37,16 @@ function generateRandomString() {
     newID += stringChars.charAt(Math.floor(Math.random() * stringChars.length));
   }
   return newID;
+}
+
+function validEmail(email) {
+  for (var userID in users) {
+    if (users[userID].email === email) {
+      return users[userID].email;
+    } else {
+      return undefined;
+    }
+  }
 }
 
 app.get('/', (req, res) => {
@@ -47,13 +70,48 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get('/register', (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"],
+    error: req.query.error
+  }
+  res.render("registration", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  if (validEmail(req.body['email'])) {
+    res.status(400).redirect('/register?error=400');
+  }
+  if (req.body['email'] && req.body['password']) {
+    const newUserID = generateRandomString();
+    users[newUserID] = {
+      id: newUserID,
+      email: req.body['email'],
+      password: req.body['password']
+    };
+    res.cookie('username', users[newUserID].email);
+    res.redirect("/urls");
+  } else {
+    res.status(400).redirect('/register?error=400');
+  }
+});
+
+app.get('/login', (req, res) => {
+  var templateVars = {
+    username: res.cookie('username', users[newUserID].email),
+    error: req.query.error
+  };
+  res.render("login", templateVars);
+  });
+
+
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username']);
+  res.cookie('username', users[newUserID].email);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body['username']);
+  res.clearCookie('username');
   res.redirect("/urls");
 });
 
@@ -61,7 +119,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   var templateVars = {
-    username: req.cookies["username"],
+    username: res.cookie('username', users[newUserID].email),
     error: req.query.error
   };
   res.render("urls_new", templateVars);
@@ -95,7 +153,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    username: res.cookie('username', users[newUserID].email),
     urls: urlDatabase[req.params.id],
     shortURL: req.params.id,
     error: req.query.error
