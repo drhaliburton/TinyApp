@@ -6,13 +6,12 @@
   <body style="margin:100px">
     <% include partials/_header.ejs %>
     <h2>Register For TinyApp</h2>
-    <form action="/register" method="POST">
       <% if (error) { %>
         <p style="font-size:14px;">
           💥 Invalid entry - please enter your email address and password. 💥
         </p>
       <% } %>
-
+      <form method="POST" action="/register">
       <label>✉️</label>
       <input type="email" name="email" placeholder="eg: bobloblaw@lawblog.com" style="width: 300px">
       <br />
@@ -20,8 +19,6 @@
       <input type="password" name="password" placeholder="Enter a password" style="width: 300px" minLength="4">
       <br /><br />
       <input type="submit" value="Submit" style="margin-left: 20px">
-
-    </form>
-
-</body>
+      </form>
+  </body>
 </html>

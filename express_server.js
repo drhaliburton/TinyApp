@@ -4,20 +4,22 @@
 
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 8080; // default port 8080
+const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 // const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const userDatabase = require("./services/userDatabase");
 const bcrypt = require('bcrypt');
 
-//const { find, authenticate } - object destructuring
+//Stretch: const { find, authenticate } - object destructuring
+
+//Middleware
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['aslkdjfhaksjhfd918273981723']
-}))
+}));
 
 app.use((req, res, next) => {
   res.locals.user = userDatabase.find(req.session.userID);
@@ -25,6 +27,8 @@ app.use((req, res, next) => {
 });
 
 app.set('view engine', 'ejs');
+
+//Databases
 
 const urlDatabase = {
   "b2xVn2": {
@@ -37,12 +41,14 @@ const urlDatabase = {
   }
 };
 
+//Functions
+
 function urlsForUserID(currentID) {
   const userURLS = [];
   for (let key in urlDatabase) {
-    if (urlDatabase[key].userID == currentID) {
+    if (urlDatabase[key].userID === currentID) {
       userURLS.push({
-      [key]: urlDatabase[key].longURL});
+        [key]: urlDatabase[key].longURL});
     }
   }
   return userURLS;
@@ -64,7 +70,7 @@ function auth(req, res, next) {
   } else {
     res.redirect("/login");
   }
-};
+}
 
 app.get('/', (req, res) => {
   res.redirect("/urls");
@@ -99,15 +105,16 @@ app.get("/urls/:id", auth, (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+//Renders registration page for users to create new account
 
 app.get('/register', (req, res) => {
   let templateVars = {
     error: req.query.error
-  }
+  };
   res.render("registration", templateVars);
 });
 
-// Checks if entered email address has already been taken, and if not, if the
+// Checks if entered email address has already been taken, and if not, adds the new user to the users Database, sets cookie and logs them in.
 
 app.post("/register", (req, res) => {
   const emailInUse = userDatabase.checkEmail(req.body.email);
@@ -129,20 +136,23 @@ app.get('/login', (req, res) => {
     error: req.query.error
   };
   res.render("login", templateVars);
-  });
+});
 
-//checks if email and password are in the users database before redirecting to logged in urls page
+//checks if is a valid user, then checks if hashed passwords matched before logging in and setting cookie ID.
 
 app.post('/login', (req, res) => {
   const userID = userDatabase.checkEmail(req.body.email);
+  if (!userID) {
+    res.redirect('/login?error=403');
+  }
   const existingUserPass = userDatabase.find(userID).password;
   const matchedPass = bcrypt.compareSync(req.body.password, existingUserPass);
   const user = userDatabase.authenticate(req.body.email, existingUserPass);
-  if (user && matchedPass) {
-      req.session.userID = userID;
-      res.redirect("/");
-    } else {
-      res.status(403).redirect('/login?error=403');
+  if (matchedPass) {
+    req.session.userID = userID;
+    res.redirect("/");
+  } else {
+    res.redirect('/login?error=403');
   }
 });
 
@@ -165,7 +175,7 @@ app.post("/urls/:id", auth, (req, res) => {
   }
 });
 
-//Generates random ID and redirects to shortURL page
+//Generates random ID for new shortURL and redirects to shortURL page
 
 app.post("/urls", auth, (req, res) => {
 

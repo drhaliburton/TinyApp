@@ -7,7 +7,7 @@
     <% include partials/_header.ejs %>
 
       <h2>Your TinyURL</h2>
-      <p><%= longURL['longURL'] %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
+      <p><%= longURL['longURL'] %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br /></p>
 
       <form method="POST" action="/urls/<%= shortURL %>">
         <label for="longURL" font-size="16px">Edit URL:</label>
@@ -20,8 +20,6 @@
           💥 Invalid entry. Format: http://www.example.com. 💥
         </p>
       <% } %>
-
-      </p>
 
     <a href="/urls/new">Add New</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="/urls">Show All</a>
   </body>

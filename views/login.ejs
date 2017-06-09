@@ -7,22 +7,24 @@
 
   <body style="margin:75px">
     <h4>Login to TinyApp</h4>
-    <form action="/login" method="POST" style="margin-bottom: 50px">
-      <% if (error) { %>
-        <p style="font-size:14px;">
-          💥 Invalid login - please enter valid credentials or <a href="/register">register here</a>💥
-        </p>
+      <form action="/login" method="POST" style="margin-bottom: 50px">
+        <% if (error) { %>
+          <p style="font-size:14px;">
+            💥 Invalid login - please enter valid credenentials.</a>💥
+          </p>
         <% } %>
-      ✉️
-      <input type="email" name="email" placeholder="eg: bobloblaw@lawblog.com" style="width: 300px" required>
-      <br />
-      🗝
-      <input type="password" name="password" placeholder="Enter a password" style="width: 300px" minLength="4" required>
-      <br />
-      <p> <input type="submit" value="Login" style="margin-left: 20px"> &nbsp;&nbsp;|&nbsp;&nbsp; Not a member? <a href="/register">Register</a>.</p> 
-    </form>
 
+        ✉️
+        <input type="email" name="email" placeholder="eg: bobloblaw@lawblog.com" style="width: 300px" required>
+        <br />
 
+        🗝
+        <input type="password" name="password" placeholder="Enter a password" style="width: 300px" minLength="4" required>
+        <br />
+        
+        <p>
+          <input type="submit" value="Login" style="margin-left: 20px"> &nbsp;&nbsp;|&nbsp;&nbsp; Not a member? <a href="/register">Register</a>.
+        </p>
+      </form>
   </body>
-
 </html>

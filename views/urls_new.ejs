@@ -10,15 +10,11 @@
     <form action="/urls" method="POST">
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="Type your URL here! 👀" style="width: 300px">
-      <input type="submit" value="Submit">&nbsp;&nbsp; |&nbsp;&nbsp;
-      <a href="/urls">Show All</a>
+      <input type="submit" value="Submit">&nbsp;&nbsp; |&nbsp;&nbsp;<a href="/urls">Show All</a>
 
       <% if (error) { %>
-        <p style="font-size:14px;">
-          💥 Invalid entry. Format: http://www.example.com. 💥
-        </p>
+        <p style="font-size:14px;">💥 Invalid entry. Format: http://www.example.com. 💥</p>
       <% } %>
     </form>
-    <br />
   </body>
 </html>
