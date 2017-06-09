@@ -1,27 +1,28 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+
   <title>Shotened URLS</title>
 </head>
-  <body>
+  <body style="margin:100px">
     <% include partials/_header.ejs %>
     <p>
+      <h2>Short Links</h2>
+        🌈 <a href="/urls/new">Add New</a>
       <ul>
         <% urls.forEach(function(url) {
 
           let shortCode = Object.keys(url)[0];
           let longURL = url[shortCode]; %>
-          shortURL: <%= shortCode%> =>
-          longURL: <%= longURL %><Br />
-
-          <br /><br />
+          <a href="http://localhost:8080/" target="_blank">http://localhost:8080/<%= shortCode%></a> =>
+          <a href="<%= longURL %>" target="_blank"><%= longURL %></a>
           <form method="POST" action="/urls/<%= shortCode %>/delete">
-            <input type="submit" value="Delete"> | <a href="/urls/<%= shortCode %>" class="button">Edit</a>
+            <input type="submit" value="Delete"> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="/urls/<%= shortCode %>">Edit</a>
           </form>
             <%  }); %>
         </li>
       </ul>
     </p>
-  <a href="/urls/new">Add New</a>
+    <br />
   </body>
 </html>

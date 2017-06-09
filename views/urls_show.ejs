@@ -3,24 +3,26 @@
 <head>
   <title>Shortened URL</title>
 </head>
-  <body>
+  <body style="margin:100px">
     <% include partials/_header.ejs %>
-      <p>
-      <%= longURL %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
+
+      <h2>Your TinyURL</h2>
+      <p><%= longURL['longURL'] %> => <a href="http://localhost:8080/u/<%= shortURL %>">http://localhost:8080/u/<%= shortURL %></a><br />
 
       <form method="POST" action="/urls/<%= shortURL %>">
-        <label for="longURL">Edit URL:</label>
+        <label for="longURL" font-size="16px">Edit URL:</label>
         <input id="longURL" type="text" name="longURL" placeholder="Type your new URL here! 👀" style="width: 300px">
         <input type="submit" value="Update">
       </form>
 
       <% if (error) { %>
         <p style="font-size:14px;">
-          💥 Invalid entry - please enter valid address. Format: http://www.example.com. 💥
+          💥 Invalid entry. Format: http://www.example.com. 💥
         </p>
       <% } %>
 
       </p>
-    <a href="/urls/new">Try Another</a> | <a href="/urls">Show All</a>
+
+    <a href="/urls/new">Add New</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="/urls">Show All</a>
   </body>
 </html>

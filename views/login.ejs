@@ -1,24 +1,28 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Shortened URL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <title>Login to TinyApp</title>
   </head>
 
-  <body>
-      <form action="/login" method="POST" style="margin-bottom: 50px">
+  <body style="margin:75px">
+    <h4>Login to TinyApp</h4>
+    <form action="/login" method="POST" style="margin-bottom: 50px">
       <% if (error) { %>
         <p style="font-size:14px;">
           💥 Invalid login - please enter valid credentials or <a href="/register">register here</a>💥
         </p>
         <% } %>
-      <label> ✉️ </label>
-      <input type="email" name="email" placeholder="eg: bob@pursefirst.com" style="width: 300px">
+      ✉️
+      <input type="email" name="email" placeholder="eg: bobloblaw@lawblog.com" style="width: 300px" required>
       <br />
-      <label for="password"> 🗝 </label>
-      <input type="password" name="password" placeholder="Enter a password" style="width: 300px">
-      <br /><br />
-      <input type="submit" value="Login" style="margin-left: 20px">
+      🗝
+      <input type="password" name="password" placeholder="Enter a password" style="width: 300px" minLength="4" required>
+      <br />
+      <p> <input type="submit" value="Login" style="margin-left: 20px"> &nbsp;&nbsp;|&nbsp;&nbsp; Not a member? <a href="/register">Register</a>.</p> 
     </form>
+
+
   </body>
 
 </html>

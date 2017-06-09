@@ -3,20 +3,21 @@
 <head>
   <title>Register for TinyApp!</title>
 </head>
-  <body>
-
-    <form action="/register" method="POST" style="margin:150px;">
+  <body style="margin:100px">
+    <% include partials/_header.ejs %>
+    <h2>Register For TinyApp</h2>
+    <form action="/register" method="POST">
       <% if (error) { %>
         <p style="font-size:14px;">
           💥 Invalid entry - please enter your email address and password. 💥
         </p>
       <% } %>
 
-      <label for="email">✉️</label>
-      <input id="email" type="email" name="email" placeholder="eg: bob@pursefirst.com" style="width: 300px">
+      <label>✉️</label>
+      <input type="email" name="email" placeholder="eg: bobloblaw@lawblog.com" style="width: 300px">
       <br />
-      <label for="password">🗝  </label>
-      <input id="password" type="password" name="password" placeholder="Enter a password" style="width: 300px">
+      <label>🗝  </label>
+      <input type="password" name="password" placeholder="Enter a password" style="width: 300px" minLength="4">
       <br /><br />
       <input type="submit" value="Submit" style="margin-left: 20px">
 

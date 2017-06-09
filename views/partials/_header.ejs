@@ -1,17 +1,16 @@
-<header>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
 
-  <h1>TinyApp</h1>
+<header>
+    <h4 align="right">TinyApp</h4>
+
   <% if (user) { %>
-    Hello <%= user.email %>!
-    <p>
-        <form action="/logout" method="POST" style="margin-bottom: 50px">
-        <input type="submit" value="Logout">
-      </form>
+    <p font-size="12px" align="right">
+      Welcome back! 👋
+    </p>
+     <form align="right" action="/logout" method="POST" style="margin-bottom: 50px"><input type="submit" value="Logout">
+    </form>
     </p>
     <% } else { %>
-      <p style="font-size:14px;">
-         <a href="/login">Login</a><Br />
          <a href="/register">Register</a>
-      </p>
       <% }%>
 </header>
