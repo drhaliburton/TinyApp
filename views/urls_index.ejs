@@ -8,7 +8,7 @@
     <% include partials/_header.ejs %>
     <p>
       <h2>Short Links</h2>
-        🌈 <a href="/urls/new">Add New</a>
+        🌈 <a href="/urls/new">Add New</a><br /><br />
         <% urls.forEach(function(url) {
           let shortCode = Object.keys(url)[0];
           let longURL = url[shortCode]; %>
