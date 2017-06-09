@@ -1,14 +1,5 @@
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
+
 }
 
 function authenticate(email, password) {
@@ -27,7 +18,7 @@ function find(id) {
 function checkEmail(email) {
   for (const userID in users) {
     if (users[userID].email === email) {
-      return true;
+      return userID;
     }
   }
   return false;
@@ -40,8 +31,6 @@ function addNewUser(userID, email, password) {
     password: password
   };
 }
-
-
 
 module.exports = {
   authenticate,

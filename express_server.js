@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const userDatabase = require("./services/userDatabase");
+const bcrypt = require('bcrypt');
+
 //const { find, authenticate } - object destructuring
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -18,7 +20,6 @@ app.use((req, res, next) => {
 });
 
 app.set('view engine', 'ejs');
-
 
 const urlDatabase = {
   "b2xVn2": {
@@ -76,7 +77,6 @@ app.get("/urls/new", auth, (req, res) => {
 // renders urls_index page (displays all shortened URLS)
 
 app.get("/urls", auth, (req, res) => {
-  console.log(urlsForUserID(res.locals.user));
   let templateVars = {
     urls: urlsForUserID(res.locals.user)
   };
@@ -111,7 +111,7 @@ app.post("/register", (req, res) => {
   } else {
     const newUserID = generateRandomString();
     const userEmail = req.body.email;
-    const userPass = req.body.password;
+    const userPass = bcrypt.hashSync(req.body.password, 10);
     userDatabase.addNewUser(newUserID, userEmail, userPass);
     res.cookie('userID', newUserID);
     res.redirect("/urls");
@@ -128,8 +128,11 @@ app.get('/login', (req, res) => {
 //checks if email and password are in the users database before redirecting to logged in urls page
 
 app.post('/login', (req, res) => {
-  const user = userDatabase.authenticate(req.body.email, req.body.password);
-  if (user) {
+  const userID = userDatabase.checkEmail(req.body.email);
+  const existingUserPass = userDatabase.find(userID).password;
+  const matchedPass = bcrypt.compareSync(req.body.password, existingUserPass);
+  const user = userDatabase.authenticate(req.body.email, existingUserPass);
+  if (user && matchedPass) {
       res.cookie('userID', user.id);
       res.redirect("/");
     } else {
@@ -161,13 +164,11 @@ app.post("/urls/:id", auth, (req, res) => {
 app.post("/urls", auth, (req, res) => {
 
   if (req.body['longURL'].includes('http://')) {
-    console.log(urlDatabase);
     const newID = generateRandomString();
     urlDatabase[newID] = {
       longURL: req.body['longURL'],
       userID: res.locals.user
     };
-    console.log(urlDatabase);
     res.redirect(`/urls/${newID}`);
   } else {
     res.redirect('/urls/new?error=InvalidPath');
@@ -177,7 +178,7 @@ app.post("/urls", auth, (req, res) => {
 // Deletes a shortened URL
 
 app.post("/urls/:id/delete", auth, (req, res) => {
-  delete urlDatabase[user];
+  delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 

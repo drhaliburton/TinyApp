@@ -21,5 +21,4 @@ function urlsForUserID(currentID) {
   return userURLS;
 }
 
-
 console.log(urlsForUserID("userRandomID"));

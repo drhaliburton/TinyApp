@@ -8,6 +8,7 @@
     <p>
       <ul>
         <% urls.forEach(function(url) {
+
           let shortCode = Object.keys(url)[0];
           let longURL = url[shortCode]; %>
           shortURL: <%= shortCode%> =>
