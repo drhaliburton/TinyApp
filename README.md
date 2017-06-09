@@ -5,10 +5,13 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 A quick and painless interface allows you to enter any valid URL and returns a shortened TinyURL.
-![IMAGE](http://i.imgur.com/JoPPJOn.png)
+!["screenshot of urls-new"](https://github.com/drhaliburton/TinyApp/blob/master/docs/urls-new.png?raw=true)
+
+View your new TinyURL or update the redirect link.
+!["screenshot of urls"](https://github.com/drhaliburton/TinyApp/blob/master/docs/urls.png?raw=true)
 
 View all your shortened URLs, edit or delete existing URLS or add more to your list.
-![IMAGE](http://i.imgur.com/g2Sj0U4.png)
+!["screenshot of urls-index"](https://github.com/drhaliburton/TinyApp/blob/master/docs/urls-index.png?raw=true)
 
 
 ## Dependencies
