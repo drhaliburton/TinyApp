@@ -6,16 +6,21 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const userDatabase = require("./services/userDatabase");
 const bcrypt = require('bcrypt');
 
 //const { find, authenticate } - object destructuring
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['aslkdjfhaksjhfd918273981723']
+}))
+
 app.use((req, res, next) => {
-  res.locals.user = userDatabase.find(req.cookies.userID);
+  res.locals.user = userDatabase.find(req.session.userID);
   next();
 });
 
@@ -113,7 +118,8 @@ app.post("/register", (req, res) => {
     const userEmail = req.body.email;
     const userPass = bcrypt.hashSync(req.body.password, 10);
     userDatabase.addNewUser(newUserID, userEmail, userPass);
-    res.cookie('userID', newUserID);
+    // res.cookie('userID', newUserID);
+    req.session.userID = newUserID;
     res.redirect("/urls");
   }
 });
@@ -133,7 +139,7 @@ app.post('/login', (req, res) => {
   const matchedPass = bcrypt.compareSync(req.body.password, existingUserPass);
   const user = userDatabase.authenticate(req.body.email, existingUserPass);
   if (user && matchedPass) {
-      res.cookie('userID', user.id);
+      req.session.userID = userID;
       res.redirect("/");
     } else {
       res.status(403).redirect('/login?error=403');
@@ -141,7 +147,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('userID');
+  req.session.userID = null;
   res.redirect("/login");
 });
 
@@ -149,7 +155,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls/:id", auth, (req, res) => {
   if (req.body['longURL'].includes('http://')) {
-    urlDatabase[res.params.id] = {
+    urlDatabase[req.params.id] = {
       longURL: req.body['longURL'],
       userID: res.locals.user
     };
@@ -185,7 +191,7 @@ app.post("/urls/:id/delete", auth, (req, res) => {
 //reroutes shortened URL to original URL
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
