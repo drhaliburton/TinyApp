@@ -9,7 +9,7 @@
     <p>
       <h2>Short Links</h2>
         🌈 <a href="/urls/new">Add New</a><br /><br />
-        <% urls.forEach(function(url) {
+        <% urls.forEach((url) => {
           let shortCode = Object.keys(url)[0];
           let longURL = url[shortCode]; %>
 

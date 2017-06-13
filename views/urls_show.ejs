@@ -11,7 +11,7 @@
 
       <form method="POST" action="/urls/<%= shortURL %>">
         <label for="longURL" font-size="16px">Edit URL:</label>
-        <input id="longURL" type="text" name="longURL" placeholder="Type your new URL here! 👀" style="width: 300px">
+        <input id="longURL" type="text" name="longURL" value="<%= longURL['longURL'] %>" style="width: 300px">
         <input type="submit" value="Update">
       </form>
 

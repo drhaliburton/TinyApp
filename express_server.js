@@ -6,16 +6,15 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
-// const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const userDatabase = require("./services/userDatabase");
 const bcrypt = require('bcrypt');
-
-//Stretch: const { find, authenticate } - object destructuring
+const methodOverride = require('method-override');
 
 //Middleware
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(cookieSession({
   name: 'session',
   keys: ['aslkdjfhaksjhfd918273981723']
@@ -31,14 +30,6 @@ app.set('view engine', 'ejs');
 //Databases
 
 const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "user2RandomID"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "userRandomID"
-  }
 };
 
 //Functions
@@ -56,9 +47,9 @@ function urlsForUserID(currentID) {
 
 
 function generateRandomString() {
-  var newID = "";
-  var stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for(var i = 0; i < 6; i++) {
+  let newID = "";
+  const stringChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for(let i = 0; i < 6; i++) {
     newID += stringChars.charAt(Math.floor(Math.random() * stringChars.length));
   }
   return newID;
@@ -76,39 +67,10 @@ app.get('/', (req, res) => {
   res.redirect("/urls");
 });
 
-//Renders urls_new for users to input a longURL to be shortened
-
-app.get("/urls/new", auth, (req, res) => {
-  var templateVars = {
-    error: req.query.error
-  };
-  res.render("urls_new", templateVars);
-});
-
-// renders urls_index page (displays all shortened URLS)
-
-app.get("/urls", auth, (req, res) => {
-  let templateVars = {
-    urls: urlsForUserID(res.locals.user)
-  };
-  res.render("urls_index", templateVars);
-});
-
-//Displays shortURL page for users to view/edit new URL
-
-app.get("/urls/:id", auth, (req, res) => {
-  let templateVars = {
-    longURL: urlDatabase[req.params.id],
-    shortURL: req.params.id,
-    error: req.query.error
-  };
-  res.render("urls_show", templateVars);
-});
-
 //Renders registration page for users to create new account
 
 app.get('/register', (req, res) => {
-  let templateVars = {
+  const templateVars = {
     error: req.query.error
   };
   res.render("registration", templateVars);
@@ -132,7 +94,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  var templateVars = {
+  const templateVars = {
     error: req.query.error
   };
   res.render("login", templateVars);
@@ -147,7 +109,6 @@ app.post('/login', (req, res) => {
   }
   const existingUserPass = userDatabase.find(userID).password;
   const matchedPass = bcrypt.compareSync(req.body.password, existingUserPass);
-  const user = userDatabase.authenticate(req.body.email, existingUserPass);
   if (matchedPass) {
     req.session.userID = userID;
     res.redirect("/");
@@ -161,18 +122,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-//Creates a new shortened URL
 
-app.post("/urls/:id", auth, (req, res) => {
-  if (req.body['longURL'].includes('http://')) {
-    urlDatabase[req.params.id] = {
-      longURL: req.body['longURL'],
-      userID: res.locals.user
-    };
-    res.redirect(`/urls/${req.params.id}`);
-  } else {
-    res.redirect(`/urls/${req.params.id}?error=InvalidPath`);
-  }
+// renders urls_index page (displays all shortened URLS)
+
+app.get("/urls", auth, (req, res) => {
+  const templateVars = {
+    urls: urlsForUserID(res.locals.user)
+  };
+  res.render("urls_index", templateVars);
 });
 
 //Generates random ID for new shortURL and redirects to shortURL page
@@ -188,6 +145,40 @@ app.post("/urls", auth, (req, res) => {
     res.redirect(`/urls/${newID}`);
   } else {
     res.redirect('/urls/new?error=InvalidPath');
+  }
+});
+
+//Renders urls_new for users to input a longURL to be shortened
+
+app.get("/urls/new", auth, (req, res) => {
+  const templateVars = {
+    error: req.query.error
+  };
+  res.render("urls_new", templateVars);
+});
+
+//Displays shortURL page for users to view/edit new URL
+
+app.get("/urls/:id", auth, (req, res) => {
+  const templateVars = {
+    longURL: urlDatabase[req.params.id],
+    shortURL: req.params.id,
+    error: req.query.error
+  };
+  res.render("urls_show", templateVars);
+});
+
+//Creates a new shortened URL
+
+app.post("/urls/:id", auth, (req, res) => {
+  if (req.body['longURL'].includes('http://')) {
+    urlDatabase[req.params.id] = {
+      longURL: req.body['longURL'],
+      userID: res.locals.user
+    };
+    res.redirect(`/urls/${req.params.id}`);
+  } else {
+    res.redirect(`/urls/${req.params.id}?error=InvalidPath`);
   }
 });
 
